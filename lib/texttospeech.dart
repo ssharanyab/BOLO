@@ -11,7 +11,6 @@ class TexttoSpeech extends StatelessWidget {
       await flutterTts.speak(text);
     }
     return Material(
-
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -19,7 +18,7 @@ class TexttoSpeech extends StatelessWidget {
             controller: textEditingController,
           ),
           RaisedButton(
-        child: Text('Press this to Speak'),
+        child: Text('Press this to say'),
         onPressed: ()=> speak(textEditingController.text)),
         ],)
       
