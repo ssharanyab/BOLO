@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 void main() {
-  runApp(Yolo());
+  runApp(MyApp());
 }
-
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+        home: new Yolo());
+  
+  }
+}
 class Yolo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+     return new Scaffold(
         body: Center(
             child: RaisedButton(
                 child: Text('Text to speech'),
@@ -18,9 +24,8 @@ class Yolo extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) => TexttoSpeech()),
                   );
-                })),
-      ),
-    );
+                }),),
+      );
   }
 }
 
