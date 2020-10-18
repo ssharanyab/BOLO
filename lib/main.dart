@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'texttospeech.dart';
-import 'speechtotext.dart';
+
 
 
 void main() { 
@@ -8,12 +8,10 @@ void main() {
     initialRoute: '/', 
     routes: { 
       '/': (context) => HomeRoute(), 
-      '/second': (context) => TexttoSpeech(), 
-      '/third': (context) => SpeechtoText(), 
+      '/second': (context) => TexttoSpeech(),  
     }, 
   )); 
 } 
-
 
 class HomeRoute extends StatelessWidget { 
   @override 
@@ -21,23 +19,18 @@ class HomeRoute extends StatelessWidget {
     return Scaffold( 
       appBar: AppBar( 
         title: Text('YOLO'), 
-        backgroundColor: Colors.green, 
+        backgroundColor: Colors.grey[300], 
       ), 
       body: Center( 
           child: Column( 
           children: <Widget>[ 
           RaisedButton( 
+
             child: Text('Text to Speech!'), 
             onPressed: () { 
               Navigator.pushNamed(context, '/second'); 
             }, 
-          ), 
-          RaisedButton( 
-            child: Text('Speech to text!'), 
-            onPressed: () { 
-              Navigator.pushNamed(context, '/third'); 
-            }, 
-          ), 
+          ),  
         ], 
       )), 
     ); 
