@@ -1,16 +1,23 @@
 # yolo
 
-A new Flutter project.
 
-## Getting Started
+## Inspiration
+People With disabilities especially the ones who can't speak face find it challenging to face the real world. 
 
-This project is a starting point for a Flutter application.
+## What it does
+Our app takes input from the user as text and the app speak it on his/her behalf.
+## How we built it
+We built using flutter and using flutter_tts in pub
 
-A few resources to get you started if this is your first Flutter project:
+## Challenges we ran into
+We had problems physically debugging the app on a real device. But this was eventually sorted out.
+We attempted to create speech to text as well but could not do it.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Accomplishments that we're proud of
+Making an app in 24hrs. We had never done it before.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## What we learned
+We learnt how to collaborate and work as a team in making the project.
+
+## What's next for YOLO
+We plant to add speech to text as an upcoming feature.
