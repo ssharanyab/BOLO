@@ -10,18 +10,21 @@ class TexttoSpeech extends StatelessWidget {
     Future speak(String text) async {
       await flutterTts.speak(text);
     }
+
     return Material(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TextFormField(
-            controller: textEditingController,
+        color: Colors.deepOrange[400],
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextFormField(
+                controller: textEditingController,
+              ),
+              RaisedButton(
+                  child: Text('Press this to say'),
+                  onPressed: () => speak(textEditingController.text)),
+            ],
           ),
-          RaisedButton(
-        child: Text('Press this to say'),
-        onPressed: ()=> speak(textEditingController.text)),
-        ],)
-      
-    );
+        ));
   }
 }
