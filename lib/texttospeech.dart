@@ -6,18 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
-import 'utils/elevatedButton.dart';
+import 'utils/widget.dart';
 
 enum TtsState { playing, stopped, paused, continued }
 
-class TextToSpeech extends StatefulWidget {
-  const TextToSpeech({Key key}) : super(key: key);
+class TextToSpeechScreen extends StatefulWidget {
+  const TextToSpeechScreen({Key key}) : super(key: key);
 
   @override
-  _TextToSpeechState createState() => _TextToSpeechState();
+  _TextToSpeechScreenState createState() => _TextToSpeechScreenState();
 }
 
-class _TextToSpeechState extends State<TextToSpeech> {
+class _TextToSpeechScreenState extends State<TextToSpeechScreen> {
   FlutterTts flutterTts;
   String language;
   String engine;
@@ -250,20 +250,20 @@ class _TextToSpeechState extends State<TextToSpeech> {
       return Container(
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        _buildButtonColumn(
+        buildButtonColumn(
             Colors.green, Colors.greenAccent, Icons.play_arrow, 'PLAY', _speak),
-        _buildButtonColumn(
+        buildButtonColumn(
             Colors.red, Colors.redAccent, Icons.stop, 'STOP', _stop),
       ]));
     } else {
       return Container(
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-        _buildButtonColumn(
+        buildButtonColumn(
             Colors.green, Colors.greenAccent, Icons.play_arrow, 'PLAY', _speak),
-        _buildButtonColumn(
+        buildButtonColumn(
             Colors.red, Colors.redAccent, Icons.stop, 'STOP', _stop),
-        _buildButtonColumn(
+        buildButtonColumn(
             Colors.blue, Colors.blueAccent, Icons.pause, 'PAUSE', _pause),
       ]));
     }
@@ -288,27 +288,6 @@ class _TextToSpeechState extends State<TextToSpeech> {
               Text(isCurrentLanguageInstalled ? "Installed" : "Not Installed"),
         ),
       ]));
-
-  Column _buildButtonColumn(Color color, Color splashColor, IconData icon,
-      String label, Function func) {
-    return Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          IconButton(
-              icon: Icon(icon),
-              color: color,
-              splashColor: splashColor,
-              onPressed: () => func()),
-          Container(
-              margin: const EdgeInsets.only(top: 8.0),
-              child: Text(label,
-                  style: TextStyle(
-                      fontSize: 12.0,
-                      fontWeight: FontWeight.w400,
-                      color: color)))
-        ]);
-  }
 
   Widget _buildSliders() {
     return Column(
@@ -390,50 +369,52 @@ class _TextToSpeechState extends State<TextToSpeech> {
   Widget _save() {
     return Padding(
         padding: EdgeInsets.all(24),
-        child: CustomElevatedButton(
-            onPressed: () {
-              _newVoiceText != null
-                  ? showDialog(
-                      context: context,
-                      barrierDismissible: true,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Save Text Audio'),
-                          content: TextFormField(
-                              decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: 'Enter Name of File'),
-                              onChanged: (String value) {
-                                _fileName(value);
-                              }),
-                          actions: [
-                            TextButton(
-                                onPressed: () async {
-                                  await flutterTts.awaitSynthCompletion(true);
-                                  await flutterTts.synthesizeToFile(
-                                      _newVoiceText,
-                                      Platform.isAndroid
-                                          ? _fileNameText + ".wav"
-                                          : _fileNameText + ".caf");
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("Save")),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text("Cancel",
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                    ))),
-                            const SizedBox(
-                              width: 8,
-                            )
-                          ],
-                        );
-                      })
-                  : null;
-            },
-            text: 'Save Speech'));
+        child: customElevatedButton("Save Speech", () {
+          _showDialog();
+        }));
+  }
+
+  void _showDialog() {
+    _newVoiceText != null
+        ? showDialog(
+            context: context,
+            barrierDismissible: true,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Save Text Audio'),
+                content: TextFormField(
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Enter Name of File'),
+                    onChanged: (String value) {
+                      _fileName(value);
+                    }),
+                actions: [
+                  TextButton(
+                      onPressed: () async {
+                        await flutterTts.awaitSynthCompletion(true);
+                        await flutterTts.synthesizeToFile(
+                            _newVoiceText,
+                            Platform.isAndroid
+                                ? _fileNameText + ".wav"
+                                : _fileNameText + ".caf");
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Save")),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Cancel",
+                          style: TextStyle(
+                            color: Colors.red,
+                          ))),
+                  const SizedBox(
+                    width: 8,
+                  )
+                ],
+              );
+            })
+        : null;
   }
 }

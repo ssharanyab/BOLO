@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'speechtotext.dart';
 import 'splashscreen.dart';
 import 'texttospeech.dart';
-import 'utils/elevatedButton.dart';
+import 'utils/widget.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -22,7 +23,8 @@ void main() {
     routes: {
       '/': (context) => SplashScreen(),
       '/home': (context) => HomeScreen(),
-      '/tts': (context) => TextToSpeech(),
+      '/tts': (context) => TextToSpeechScreen(),
+      '/stt': (context) => SpeechToTextScreen(),
     },
   ));
 }
@@ -50,21 +52,16 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: CustomElevatedButton(
-              text: "Text to Speech",
-              onPressed: () {
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: customElevatedButton("Text to Speech", () {
                 Navigator.pushNamed(context, '/tts');
-              },
-            ),
-          )
-          // Padding(
-          //     padding: EdgeInsets.symmetric(horizontal: 32),
-          //     child: ElevatedButton(
-          //         onPressed: () {
-          //           Navigator.pushNamed(context, '/tts');
-          //         },
-          //         child: Text('Text to Speech')))
+              })),
+          const SizedBox(height: 16),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: customElevatedButton("Speech to Text", () {
+                Navigator.pushNamed(context, '/stt');
+              }))
         ],
       ),
     )));
