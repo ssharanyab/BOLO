@@ -1,5 +1,6 @@
 # Communication Helper
 An application to help communicate for people with disabilities to **speak** with "**Text to Speech**" or **listen** through "**Speech to Text**"
+
 <img src="https://github.com/deltarfd/BOLO/blob/master/assets/images/comhelper_logo.png" width="250">
 
 ## Inspiration
