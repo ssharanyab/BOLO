@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
-import 'utils/widget.dart';
+import 'package:flutter/services.dart';
 
 class SpeechToTextScreen extends StatefulWidget {
   const SpeechToTextScreen({Key key}) : super(key: key);
@@ -29,6 +29,7 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
   @override
   void initState() {
     super.initState();
+    initSpeechState();
   }
 
   /// This initializes SpeechToText. That only has to be done
@@ -78,12 +79,11 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
           height: 32,
         ),
         Text(
-          'Speech recognition available',
+          'Speech Recognition Available',
           style: TextStyle(fontSize: 22.0),
         ),
         Column(
           children: <Widget>[
-            InitSpeechWidget(_hasSpeech, initSpeechState),
             SpeechControlWidget(_hasSpeech, speech.isListening, startListening,
                 stopListening, cancelListening),
             SessionOptionsWidget(_currentLocaleId, _switchLang, _localeNames,
@@ -94,10 +94,12 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
           flex: 4,
           child: RecognitionResultsWidget(lastWords: lastWords, level: level),
         ),
-        Expanded(
-          flex: 1,
-          child: ErrorWidget(lastError: lastError),
-        ),
+        lastError == ""
+            ? const SizedBox()
+            : Expanded(
+                flex: 1,
+                child: ErrorWidget(lastError: lastError),
+              ),
         SpeechStatusWidget(speech: speech),
       ]),
     );
@@ -106,7 +108,7 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
   // This is called each time the users wants to start a new speech
   // recognition session
   void startListening() {
-    _logEvent('start listening');
+    _logEvent('Start Listening');
     lastWords = '';
     lastError = '';
     // Note that `listenFor` is the maximum, not the minimun, on some
@@ -147,7 +149,7 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
     _logEvent(
         'Result listener final: ${result.finalResult}, words: ${result.recognizedWords}');
     setState(() {
-      lastWords = '${result.recognizedWords} - ${result.finalResult}';
+      lastWords = '${result.recognizedWords}';
     });
   }
 
@@ -164,7 +166,7 @@ class _SpeechToTextScreenState extends State<SpeechToTextScreen> {
     _logEvent(
         'Received error status: $error, listening: ${speech.isListening}');
     setState(() {
-      lastError = '${error.errorMsg} - ${error.permanent}';
+      lastError = '${error.errorMsg}';
     });
   }
 
@@ -212,6 +214,9 @@ class RecognitionResultsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        const SizedBox(
+          height: 16,
+        ),
         Center(
           child: Text(
             'Recognized Words',
@@ -226,35 +231,72 @@ class RecognitionResultsWidget extends StatelessWidget {
                 child: Center(
                   child: Text(
                     lastWords,
+                    style: TextStyle(fontSize: 14),
                     textAlign: TextAlign.center,
                   ),
                 ),
               ),
               Positioned.fill(
-                bottom: 10,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                            blurRadius: .26,
-                            spreadRadius: level * 1.5,
-                            color: Colors.black.withOpacity(.05))
-                      ],
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.mic),
-                      onPressed: () => null,
-                    ),
-                  ),
-                ),
-              ),
+                  bottom: 10,
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                    blurRadius: .26,
+                                    spreadRadius: level * 1.5,
+                                    color: Colors.black.withOpacity(.05))
+                              ],
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.mic),
+                              onPressed: () => null,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        lastWords == ""
+                            ? const SizedBox()
+                            : Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  width: 40,
+                                  height: 40,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(50)),
+                                  ),
+                                  child: IconButton(
+                                    icon: Icon(Icons.file_copy_rounded),
+                                    onPressed: () async {
+                                      await Clipboard.setData(
+                                              ClipboardData(text: lastWords))
+                                          .then((result) {
+                                        final snackBar = SnackBar(
+                                          content: Text('Copied to Clipboard'),
+                                        );
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(snackBar);
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                      ])),
             ],
           ),
         ),
@@ -272,7 +314,7 @@ class HeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        'Speech recognition available',
+        'Speech Recognition Available',
         style: TextStyle(fontSize: 22.0),
       ),
     );
@@ -293,10 +335,13 @@ class ErrorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        const SizedBox(
+          height: 16,
+        ),
         Center(
           child: Text(
             'Error Status',
-            style: TextStyle(fontSize: 22.0),
+            style: TextStyle(fontSize: 18.0, color: Colors.red),
           ),
         ),
         Center(
@@ -359,49 +404,20 @@ class SessionOptionsWidget extends StatelessWidget {
     return Column(
       children: <Widget>[
         Text('Language: '),
-        DropdownButton<String>(
-          onChanged: (selectedVal) => switchLang(selectedVal),
-          value: currentLocaleId,
-          hint: Text("Choose Languages"),
-          items: localeNames
-              .map(
-                (localeName) => DropdownMenuItem(
-                  value: localeName.localeId,
-                  child: Text(localeName.name),
-                ),
-              )
-              .toList(),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Log events: '),
-            Checkbox(
-              value: logEvents,
-              onChanged: switchLogging,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class InitSpeechWidget extends StatelessWidget {
-  const InitSpeechWidget(this.hasSpeech, this.initSpeechState, {Key key})
-      : super(key: key);
-
-  final bool hasSpeech;
-  final Future<void> Function() initSpeechState;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        TextButton(
-          onPressed: hasSpeech ? null : initSpeechState,
-          child: Text('Initialize'),
+        DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            alignment: Alignment.center,
+            onChanged: (selectedVal) => switchLang(selectedVal),
+            value: currentLocaleId,
+            items: localeNames
+                .map(
+                  (localeName) => DropdownMenuItem(
+                    value: localeName.localeId,
+                    child: Text(localeName.name),
+                  ),
+                )
+                .toList(),
+          ),
         ),
       ],
     );
@@ -421,16 +437,24 @@ class SpeechStatusWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 20),
-      color: Theme.of(context).backgroundColor,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: <Color>[Color(0xFF1BA9CC), Color(0xFF2BCECA)],
+        ),
+      ),
       child: Center(
         child: speech.isListening
             ? Text(
                 "I'm listening...",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               )
             : Text(
                 'Not listening',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
       ),
     );
